@@ -1,26 +1,43 @@
-#! /usr/local/bin/php
 <?php
+use Ratchet\MessageComponentInterface;
+use Ratchet\ConnectionInterface;
+use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 
-require_once('./websockets.php');
+    require __DIR__ . '/vendor/autoload.php';
 
-class echoServer extends WebSocketServer {
-	//protected $maxBufferSize = 1048576; //1MB... overkill for an echo server, but potentially plausible for other applications.
-	
-	protected function process ($user, $message) {
-		$this->send($user,$message);
-	}
-	
-	protected function connected ($user) {
-		// Do nothing: This is just an echo server, there's no need to track the user.
-		// However, if we did care about the users, we would probably have a cookie to
-		// parse at this step, would be looking them up in permanent storage, etc.
-	}
-	
-	protected function closed ($user) {
-		// Do nothing: This is where cleanup would go, in case the user had any sort of
-		// open files or other objects associated with them.  This runs after the socket 
-		// has been closed, so there is no need to clean up the socket itself here.
-	}
+/**
+ * polemos.php
+ * WebSocket message server for the Polemos engine
+ */
+class PolemosServer implements MessageComponentInterface {
+    protected $clients;
+
+    public function __construct() {
+        $this->clients = new \SplObjectStorage;
+    }
+
+    public function onOpen(ConnectionInterface $conn) {
+        $this->clients->attach($conn);
+    }
+
+    public function onMessage(ConnectionInterface $from, $msg) {
+        foreach ($this->clients as $client) {
+            if ($from != $client) {
+                $client->send($msg);
+            }
+        }
+    }
+
+    public function onClose(ConnectionInterface $conn) {
+        $this->clients->detach($conn);
+    }
+
+    public function onError(ConnectionInterface $conn, \Exception $e) {
+        $conn->close();
+    }
 }
 
-$echo = new echoServer("108.59.10.218","47895");
+    // Run the server application through the WebSocket protocol on port 47895
+    $server = IoServer::factory(new WsServer(new PolemosServer), 47895, '108.59.10.218');
+    $server->run();
