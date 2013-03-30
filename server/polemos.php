@@ -3,8 +3,10 @@ use Ratchet\MessageComponentInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Server\IoServer;
 use Ratchet\WebSocket\WsServer;
+use Polemos\Mapper As Mapper;
 
     require __DIR__ . '/vendor/autoload.php';
+    require __DIR__ . '/PolemosClasses/Mapper.php';
 
 /**
  * polemos.php
@@ -19,13 +21,17 @@ class PolemosServer implements MessageComponentInterface {
 
     public function onOpen(ConnectionInterface $conn) {
         $this->clients->attach($conn);
+        
+
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
         foreach ($this->clients as $client) {
-            if ($from != $client) {
-                $client->send($msg);
-            }
+            $playerMap = new Mapper(0, 0, 0);
+            $message = array();
+            $message['topic'] = 0;
+            $message['map'] = $playerMap->getMap();
+            $client->send($message);
         }
     }
 
@@ -41,3 +47,4 @@ class PolemosServer implements MessageComponentInterface {
     // Run the server application through the WebSocket protocol on port 47895
     $server = IoServer::factory(new WsServer(new PolemosServer), 47895, '108.59.10.218');
     $server->run();
+?>
