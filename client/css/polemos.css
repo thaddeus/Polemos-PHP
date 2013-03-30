@@ -1,0 +1,30 @@
+h1 {
+	font-size: 42px;
+}
+
+h1, h2 {
+	font-family: sans-serif;
+	font-weight: lighter;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	text-decoration: none;
+}
+
+#main {
+	width: 992px;
+	margin: 0 auto 0 auto;
+}
+
+#canvas-wrapper {
+	position:relative;
+}
+
+#game {
+	width: 992px;
+	height: 736px;
+	background: #000;
+}
