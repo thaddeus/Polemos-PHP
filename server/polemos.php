@@ -28,11 +28,11 @@ class PolemosServer implements MessageComponentInterface {
     public function onMessage(ConnectionInterface $from, $msg) {
         foreach ($this->clients as $client) {
             $playerMap = new Mapper();
-            $playerMap->LoadMap(0, 0, 0);
+            $playerMap->LoadPlayerMap(0, 0, 0);
             $message = array();
             $message['topic'] = 0;
             $message['map'] = $playerMap->getMap();
-            $client->send($message);
+            $client->send(json_encode($message));
         }
     }
 

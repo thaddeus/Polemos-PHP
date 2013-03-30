@@ -29,7 +29,7 @@ class Mapper
         $this->_mapnumber = $mapnumber;
         $this->_xlocation = $xlocation;
         $this->_ylocation = $ylocation;
-        $this->_type = PLAYER_MAP;
+        $this->_type = self::PLAYER_MAP;
     }
 
     //Mapper constructor override
@@ -41,7 +41,7 @@ class Mapper
         $this->_ylocation = $ylocation;
         $this->_width	  = $width;
         $this->_height	  = $height;
-        $this->_type 	  = CUSTOM_MAP;
+        $this->_type 	  = self::CUSTOM_MAP;
     }
 
     //Retrieve an array of the current map object
@@ -50,40 +50,47 @@ class Mapper
     	$mapTiles = array();
     	$tileCounter = 0;
     	//Are we asking for a player map or a custom map?
-    	if ( getType() == PLAYER_MAP )
+    	if ( $this->getMapType() == self::PLAYER_MAP )
     	{
-    		for ( $y = getY() - ((PLAYER_MAP_HEIGHT - 1) / 2); $y <= getY() + ((PLAYER_MAP_HEIGHT - 1) / 2); $y++ ) 
+    		for ( $y = $this->getY() - ((self::PLAYER_MAP_HEIGHT - 1) / 2); $y <= $this->getY() + ((self::PLAYER_MAP_HEIGHT - 1) / 2); $y++ ) 
     		{ 
-    			for ( $x = getX() - ((PLAYER_MAP_WIDTH - 1) / 2); $x <= getX() + ((PLAYER_MAP_WIDTH - 1) / 2); $x++ ) 
+    			for ( $x = $this->getX() - ((self::PLAYER_MAP_WIDTH - 1) / 2); $x <= $this->getX() + ((self::PLAYER_MAP_WIDTH - 1) / 2); $x++ ) 
     			{ 
-    				$mapTiles[$tileCounter] = getTile(getMapNumber(), $x, $y);
+    				$mapTiles[$tileCounter] = $this->getTile($this->getMapNumber(), $x, $y);
     				$tileCounter++;
     			}
     		}
     	}
-    	elseif ( getType() == CUSTOM_MAP )
+    	elseif ( $this->getMapType() == self::CUSTOM_MAP )
     	{
-    		for ( $y = getY(); $y <= (getY() + getHeight()); $y++ ) 
+    		for ( $y = $this->getY(); $y <= (getY() + $this->getHeight()); $y++ ) 
     		{ 
-    			for ( $x = getX(); $x <= (getX() + getWidth()); $x++ ) 
+    			for ( $x = $this->getX(); $x <= ($this->getX() + $this->getWidth()); $x++ ) 
 	    		{ 
-	    			$mapTiles[$tileCounter] = getTile(getMapNumber(), $x, $y);
+	    			$mapTiles[$tileCounter] = $this->getTile($this->getMapNumber(), $x, $y);
     				$tileCounter++;
 	    		}
     		}
     	}
+    	return $mapTiles;
+    	unset($mapTiles);
+    	unset($tileCounter);
     }
 
     //Retrieve the tile info
-    //For testin purposes, were just going to return one tile for now
+    //For testing purposes, were just going to return one tile for now
     public function getTile($map, $x, $y)
     {
-    	return 72;
+    	$tile = array();
+    	$tile[0] = 72;
+    	$tile[1] = 1;
+    	return $tile;
+    	unset($tile);
     }
 
 
     //Basic accessors
-	public function getType()
+	public function getMapType()
 	{
 		return $this->_type;
 	}
