@@ -24,7 +24,7 @@ class Mapper
 
 	//Mapper class constructor
 	//Used for: player map retrieval
-	public function __construct($mapnumber, $xlocation, $ylocation) {
+	public function LoadMap($mapnumber, $xlocation, $ylocation) {
 		//Assign private variables
         $this->_mapnumber = $mapnumber;
         $this->_xlocation = $xlocation;
@@ -34,7 +34,7 @@ class Mapper
 
     //Mapper constructor override
     //Used for: retrieving custom tile areas
-	public function __construct($mapnumber, $xlocation, $ylocation, $width, $height) {
+	public function LoadMap($mapnumber, $xlocation, $ylocation, $width, $height) {
 		//Assign private variables
         $this->_mapnumber = $mapnumber;
         $this->_xlocation = $xlocation;

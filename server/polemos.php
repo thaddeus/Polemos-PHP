@@ -27,7 +27,8 @@ class PolemosServer implements MessageComponentInterface {
 
     public function onMessage(ConnectionInterface $from, $msg) {
         foreach ($this->clients as $client) {
-            $playerMap = new Mapper(0, 0, 0);
+            $playerMap = new Mapper();
+            $playerMap->LoadMap(0, 0, 0);
             $message = array();
             $message['topic'] = 0;
             $message['map'] = $playerMap->getMap();
