@@ -15,24 +15,35 @@ use Polemos\Mapper As Mapper;
 class PolemosServer implements MessageComponentInterface {
     protected $clients;
 
+    const MAP_REQUEST = 0;
+
+    const MAP_TOPIC = 0;
+
     public function __construct() {
         $this->clients = new \SplObjectStorage;
     }
 
     public function onOpen(ConnectionInterface $conn) {
         $this->clients->attach($conn);
-        
+
 
     }
 
     public function onMessage(ConnectionInterface $from, $msg) {
-        foreach ($this->clients as $client) {
-            $playerMap = new Mapper();
-            $playerMap->LoadPlayerMap(0, 0, 0);
-            $message = array();
-            $message['topic'] = 0;
-            $message['map'] = $playerMap->getMap();
-            $client->send(json_encode($message));
+        print("RECIEVE << " . $msg . "\n");
+        $packet = json_decode($msg);
+        switch ($packet->{'topic'}) {
+            case self::MAP_REQUEST:
+                $playerMap = new Mapper($packet->{'map'}, $packet->{'xloc'}, $packet->{'yloc'}, $packet->{'mapwidth'}, $packet->{'mapheight'});
+                $message = array();
+                $message['topic'] = self::MAP_TOPIC;
+                $message['data'] = $playerMap->getMapObject();
+                $from->send(json_encode($message));
+                break;
+
+            default:
+                //Unknown packet
+                break;
         }
     }
 
