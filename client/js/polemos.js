@@ -37,14 +37,23 @@ var REQUEST_MAP_RIGHT  = 2; // |
 var REQUEST_MAP_TOP    = 3; // |
 var REQUEST_MAP_BOTTOM = 4; // |
 
-// Array Remove - By John Resig (MIT Licensed)
+/**
+ * John Resig (MIT Licensed) - Removes the specified element from an array
+ * @param  {Integer} from The element to remove or the first element to remove
+ * @param  {Integer} to   The last element to remove if removing multiple elements
+ * @return {Array}        The array minus removed elements
+ */
 Array.prototype.remove = function(from, to) {
   var rest = this.slice((to || from) + 1 || this.length);
   this.length = from < 0 ? this.length + from : from;
   return this.push.apply(this, rest);
 };
 
-// Array remove by object
+/**
+ * Remove a specific object from an array
+ * @param  {Object} object The object to be removed
+ * @return {Array}         Returns the array without the object that was removed
+ */
 Array.prototype.removeObject = function(object) {
 	for (var i = this.length - 1; i >= 0; i--) {
 		if(this[i] == object) {
@@ -54,7 +63,9 @@ Array.prototype.removeObject = function(object) {
 	};
 }
 
-//Document Load Function
+/**
+ * Document ready function
+ */
 $(function () {
 	try
 	{
@@ -78,12 +89,20 @@ $(function () {
 	}
 });
 
+/**
+ * Creates an image object from a URI
+ * @param  {String} imageURI The URI for the image to load (such as a URL)
+ * @return {Image}           The image object
+ */
 function loadImage(imageURI) {
 	var img = new Image();
 	img.src = imageURI;
 	return img;
 }
 
+/**
+ * Initializes variables and starts the gameloop
+ */
 function initGame()
 {
 	// Set canvas and context variables
@@ -99,8 +118,8 @@ function initGame()
 	mapHeight = canvas.height / tilesize;
 
 	//Initialize player locations
-	playerX = 50;
-	playerY = 25;
+	playerX   = 50;
+	playerY   = 25;
 	playerMap = 0;
 
 	//Initialize animation offsets
@@ -119,6 +138,9 @@ function initGame()
 	sendPacket(JSON.stringify(getMap));
 }
 
+/**
+ * Calls all the draw functions necessary to display the game
+ */
 function drawScreen()
 {
 	ctx.clearRect(0,0, canvas.width, canvas.height); //Clear the canvas
@@ -131,7 +153,8 @@ function drawScreen()
 }
 
 /**
- * @param curLayer A layer 
+ * Draws a specific layer level of tiles
+ * @param  {Number} curLayer The layer to draw
  */
 function drawLayer(curLayer)
 {
@@ -140,13 +163,13 @@ function drawLayer(curLayer)
 			var tileset = tileset1;
 
 		var xtiles = mapWidth + mapBuffer; //Width of drawn map in tiles
-
+		
 		var tiley  = Math.floor(mapData[curLayer][i][0] / (tileset.width / tilesize)) * tilesize; //Tile x location on tileset
 		var tilex  = mapData[curLayer][i][0] % (tileset.width / tilesize) * tilesize; //Tile y location on tileset
-
-		var leftx = playerX - Math.floor(mapWidth / 2) - 1;
-		var topy = playerY - Math.floor(mapHeight / 2) - 1;
-
+		
+		var leftx  = playerX - Math.ceil(mapWidth / 2);
+		var topy   = playerY - Math.ceil(mapHeight / 2);
+		
 		var yloc   = ((mapData[curLayer][i][3] - topy) * tilesize) + animOffsetY; //Y location on canvas to draw
 		var xloc   = ((mapData[curLayer][i][2] - leftx) * tilesize) + animOffsetX; //X location on canvas to draw
 
@@ -154,21 +177,29 @@ function drawLayer(curLayer)
 	};
 }
 
+/**
+ * An object to be used for producing packets
+ * @param {Integer} request The type of packet to create
+ */
 function Packet(request)
 {
 	switch(request)
 	{
 		case REQUEST_MAP:
-			this.topic = REQUEST_MAP;
-			this.xloc = playerX - Math.ceil(mapWidth / 2) - mapBuffer;
-			this.yloc = playerY - Math.ceil(mapHeight / 2) - mapBuffer;
-			this.map = playerMap;
-			this.mapwidth = mapWidth + (mapBuffer * 2);
+			this.topic     = REQUEST_MAP;
+			this.xloc      = playerX - Math.ceil(mapWidth / 2) - mapBuffer;
+			this.yloc      = playerY - Math.ceil(mapHeight / 2) - mapBuffer;
+			this.map       = playerMap;
+			this.mapwidth  = mapWidth + (mapBuffer * 2);
 			this.mapheight = mapHeight + (mapBuffer * 2);
 		break;
 	}
 }
 
+/**
+ * Parse the data from a recieved websocket message
+ * @param  {String} data The JSON encoded message
+ */
 function processData(data)
 {
 	var packet = $.parseJSON(data);
@@ -185,27 +216,22 @@ function processData(data)
 				var y = packet.data.top;
 				//For each element in that layer
 				for (var j = 0; j < packet.data.map[i].length; j++) {
-					//Assign tile location on client end to reduce network transmission
-					packet.data.map[i][j][2] = x;
-					packet.data.map[i][j][3] = y;
 					mapData[i].push(packet.data.map[i][j]);
-					x++;
-					if( x > packet.data.right )
-					{
-						x = packet.data.left;
-						y++;
-					}
 				};
 			};
 			console.log(packet.data.map[0].length);
 			removeUnbufferedTiles();
 			console.log(packet.data.map[0].length);
+			removeUnbufferedTiles();
 			//mapData = packet.data.map; //Override entire map
 			drawScreen(); //DEBUG should just update map info and wait for next draw screen
 		break;
 	}
 }
 
+/**
+ * Removes tiles outside of the map + buffer
+ */
 function removeUnbufferedTiles()
 {
 	var removeQueue = [];
@@ -216,52 +242,30 @@ function removeUnbufferedTiles()
 			//X is too far to the right
 			if( mapData[i][j][2] > (playerX + Math.floor(mapWidth / 2) + mapBuffer ) )
 			{
-				var removeElement = [];
-				//Layer to be removed from
-				removeElement[0] = i;
-				//Element to remove from that layer
-				removeElement[1] = j;
-				removeQueue.push(removeElement);
+				mapData[i].remove(j);
 			}
 			//X is too far to the left
 			else if( mapData[i][j][2] < (playerX - Math.ceil(mapWidth / 2) - mapBuffer ) )	
 			{
-				var removeElement = [];
-				//Layer to be removed from
-				removeElement[0] = i;
-				//Element to remove from that layer
-				removeElement[1] = j;
-				removeQueue.push(removeElement);
+				mapData[i].remove(j);
 			}
 			//Y is too far down
 			else if( mapData[i][j][3] > (playerY + Math.floor(mapHeight / 2) + mapBuffer ) )
 			{
-				var removeElement = [];
-				//Layer to be removed from
-				removeElement[0] = i;
-				//Element to remove from that layer
-				removeElement[1] = j;
-				removeQueue.push(removeElement);
+				mapData[i].remove(j);
 			}
 			else if( mapData[i][j][3] < (playerY - Math.ceil(mapHeight / 2) - mapBuffer) )
 			{
-				var removeElement = [];
-				//Layer to be removed from
-				removeElement[0] = i;
-				//Element to remove from that layer
-				removeElement[1] = j;
-				removeQueue.push(removeElement);
+				mapData[i].remove(j);
 			}
 		};
 	};
-	for (var i = removeQueue.length - 1; i >= 0; i--) {
-		var removeLayer = removeQueue[i][0];
-		var removeIndex = removeQueue[i][1];
-		mapData[removeLayer].splice(removeIndex, 1);
-	};
 }
 
-//Socket Send Message
+/**
+ * Sends a packet using the active websocket connection
+ * @param  {String} message The JSON encoded message to send
+ */
 function sendPacket(message){
 	try {
 		console.log(message);

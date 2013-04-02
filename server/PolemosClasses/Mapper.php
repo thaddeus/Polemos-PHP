@@ -1,7 +1,10 @@
 <?php
 
-//Mapper class for Polemos engine
-//Author: Thaddeus Bond
+/**
+ * This is the object which retrieves specific areas of a map within the Polemos engine
+ * The information is not cached within the object, but rather is a structured accessor
+ * @author  Thaddeus Bond <thaddeus@thaddeusbond.com>
+ */
 
 namespace Polemos;
 class Mapper
@@ -20,8 +23,14 @@ class Mapper
 	const FRINGE_LAYER      = 3; //Above ground layer, above sprites
 	const FRINGE_LAYER_TWO  = 4; //Second above ground layer, above sprites
 
-	//Mapper constructor override
-	//Used for: retrieving custom tile areas
+	/**
+	 * Creates a map object with the specified locations
+	 * @param [Integer] $mapnumber The map number to load from
+	 * @param [Integer] $xlocation The upper-left X coordinate of the area to load
+	 * @param [Integer] $ylocation The upper-left Y coordinate of the area to load
+	 * @param [Integer] $width     The width of tiles to load
+	 * @param [Integer] $height    The height of tiles to load
+	 */
 	public function __construct( $mapnumber, $xlocation, $ylocation, $width, $height ) {
 		//Assign private variables
 		$this->mapnumber = $mapnumber;
@@ -31,6 +40,10 @@ class Mapper
 		$this->height    = $height;
 	}
 
+	/**
+	 * Returns an array containing all the important information about this map
+	 * @return [Array] An array containing the array of tiles, their information, and general map info
+	 */
 	public function getMapObject()
 	{
 		return array(
@@ -43,7 +56,10 @@ class Mapper
 		);
 	}
 
-	//Retrieve an array of the current map object
+	/**
+	 * Retrieves the tiles within the specified area of this object
+	 * @return [Array] Array of all the tiles in this objects' area
+	 */
 	private function getMap()
 	{
 		$mapTiles = array();
@@ -64,12 +80,12 @@ class Mapper
 	}
 
 	/**
-	 * Retrieve the info about a specific tile
-	 * @param $map   [Map number]
-	 * @param $x     [Tile x location]
-	 * @param $y     [Tile y location]
-	 * @param $layer [Layer number]
-	 * @return [Array containing this tile's information]
+	 * Retrieves the information about a specific tile
+	 * @param  [Integer] $map   The map number to retrieve the tile from
+	 * @param  [Integer] $x     The x location of the tile to retrieve
+	 * @param  [Integer] $y     The y location of the tile to retrieve
+	 * @param  [Integer] $layer The layer which we want to retrieve from
+	 * @return [Array]          An array of the tile's information useful to the client for displaying it
 	 */
 	private function getTile( $map, $x, $y, $layer )
 	{
@@ -92,27 +108,46 @@ class Mapper
 	}
 
 
-	//Basic accessors
+	/**
+	 * Get this object's upper-left X location
+	 * @return [Integer] The upper-left X of the loaded map area
+	 */
 	private function getX()
 	{
 		return $this->xlocation;
 	}
 
+	/**
+	 * Get this object's upper-left Y location
+	 * @return [Integer] The upper-left Y of the loaded map area
+	 */
 	private function getY()
 	{
 		return $this->ylocation;
 	}
 
+	/**
+	 * Get this object's loaded map width in tiles
+	 * @return [Integer] The width of the loaded map area in tiles
+	 */
 	private function getWidth()
 	{
 		return $this->width;
 	}
 
+	/**
+	 * Get this object's loaded map height in tiles
+	 * @return [Integer] The height of the loaded map area in tiles
+	 */
 	private function getHeight()
 	{
 		return $this->height;
 	}
 
+	/**
+	 * Get this object's loaded map number
+	 * @return [Integer] The number of the map which is loaded
+	 */
 	private function getMapNumber()
 	{
 		return $this->mapnumber;
