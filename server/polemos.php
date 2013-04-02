@@ -57,6 +57,6 @@ class PolemosServer implements MessageComponentInterface {
 }
 
     // Run the server application through the WebSocket protocol on port 47895
-    $server = IoServer::factory(new WsServer(new PolemosServer), 47895, '108.59.10.218');
+    $server = IoServer::factory(new WsServer(new PolemosServer), 47895, '0.0.0.0');
     $server->run();
 ?>

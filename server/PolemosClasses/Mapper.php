@@ -27,8 +27,8 @@ class Mapper
 		$this->mapnumber = $mapnumber;
 		$this->xlocation = $xlocation;
 		$this->ylocation = $ylocation;
-		$this->width	  = $width;
-		$this->height	  = $height;
+		$this->width     = $width;
+		$this->height    = $height;
 	}
 
 	public function getMapObject()
@@ -44,7 +44,7 @@ class Mapper
 	}
 
 	//Retrieve an array of the current map object
-	public function getMap()
+	private function getMap()
 	{
 		$mapTiles = array();
 		$tileCounter = 0;
@@ -63,11 +63,19 @@ class Mapper
 		return $mapTiles;
 	}
 
-	//Retrieve the tile info
-	//For testing purposes, were just going to return one tile for now
-	public function getTile( $map, $x, $y, $layer )
+	/**
+	 * Retrieve the info about a specific tile
+	 * @param $map   [Map number]
+	 * @param $x     [Tile x location]
+	 * @param $y     [Tile y location]
+	 * @param $layer [Layer number]
+	 * @return [Array containing this tile's information]
+	 */
+	private function getTile( $map, $x, $y, $layer )
 	{
 		$tile    = array();
+
+		//DEBUG CODE
 		if($layer == self::GROUND_LAYER)
 			$tile[0] = 72; //Tile number
 		else if($layer == self::MASK_LAYER)
@@ -77,32 +85,35 @@ class Mapper
 		else
 			$tile[0] = 0; //Blank tile
 		$tile[1] = 1; //Tileset number
+
+		$tile[2] = $x;
+		$tile[3] = $y;
 		return $tile;
 	}
 
 
 	//Basic accessors
-	public function getX()
+	private function getX()
 	{
 		return $this->xlocation;
 	}
 
-	public function getY()
+	private function getY()
 	{
 		return $this->ylocation;
 	}
 
-	public function getWidth()
+	private function getWidth()
 	{
 		return $this->width;
 	}
 
-	public function getHeight()
+	private function getHeight()
 	{
 		return $this->height;
 	}
 
-	public function getMapNumber()
+	private function getMapNumber()
 	{
 		return $this->mapnumber;
 	}
