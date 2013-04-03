@@ -207,23 +207,15 @@ function processData(data)
 	switch(packet.topic)
 	{
 		case MAP_PACKET:
-			var x = packet.data.left;
-			var y = packet.data.top;
-
 			//For each layer returned to us
 			for (var i = 0; i < packet.data.map.length; i++) {
-				var x = packet.data.left;
-				var y = packet.data.top;
-				//For each element in that layer
+				//For each element of that layer
 				for (var j = 0; j < packet.data.map[i].length; j++) {
 					mapData[i].push(packet.data.map[i][j]);
 				};
 			};
-			console.log(packet.data.map[0].length);
+			//Remove tiles that we don't need in our cache or on our screen
 			removeUnbufferedTiles();
-			console.log(packet.data.map[0].length);
-			removeUnbufferedTiles();
-			//mapData = packet.data.map; //Override entire map
 			drawScreen(); //DEBUG should just update map info and wait for next draw screen
 		break;
 	}
